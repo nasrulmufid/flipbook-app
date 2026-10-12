@@ -28,13 +28,25 @@ npm run seed           # (opsional) impor buku contoh dari ./seed/demo
 npm run dev            # API :3001 + Vite :5173  → buka http://localhost:5173
 ```
 
-Produksi:
+Produksi tanpa Docker:
 ```bash
 npm run build
 cp .env.example .env   # lalu set ADMIN_PASSWORD (atau export variabelnya)
 npm start              # http://localhost:3001
 ```
 Login awal: `admin` / `admin123` (atau sesuai `ADMIN_USER` / `ADMIN_PASSWORD`). **Segera ganti password** di menu Akun.
+
+### Menjalankan dengan Docker Compose
+
+Salin `.env.example` menjadi `.env`, lalu isi `ADMIN_PASSWORD` dengan password kuat. Setelah itu:
+
+```bash
+docker compose up -d --build
+```
+
+Buka `http://localhost:3001` (atau port `APP_PORT` di `.env`). Untuk Cloudflare Tunnel di PC ini, arahkan hostname ke `http://localhost:3001`. Database, secret JWT otomatis, dan upload disimpan di volume `flipbook_data`, sehingga tetap ada saat container dibuat ulang. Lihat log dengan `docker compose logs -f`; hentikan dengan `docker compose down` (data tidak dihapus). Jangan gunakan `docker compose down -v` kecuali memang ingin menghapus seluruh data.
+
+Jika tunnel memakai HTTPS, set `COOKIE_SECURE=true` di `.env` sebelum menjalankan ulang Compose.
 
 Impor folder gambar Anda sendiri (mis. `files/page` dari project lama):
 ```bash

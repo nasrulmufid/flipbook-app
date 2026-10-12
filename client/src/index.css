@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "@stisla/css";
+@import "./viewer.css";
+
+html, body, #root { height: 100%; }
+body { margin: 0; }
+
+/* ikon sidebar mengikuti warna teks (aktif/hover) */
+.sidebar__button svg { color: currentColor; flex: none; }

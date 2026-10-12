@@ -1,0 +1,28 @@
+{
+  "name": "flipbook-app",
+  "version": "1.0.0",
+  "description": "FlipHTML5-style flipbook viewer + book management dashboard (React, Tailwind, Stisla, SQLite)",
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"node --watch server/index.js\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "start": "NODE_ENV=production node server/index.js",
+    "seed": "node server/seed.js",
+    "setup": "npm install && npm install --prefix client"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.2",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
+    "sharp": "^0.35.5",
+    "sql.js": "^1.11.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  },
+  "type": "module",
+  "private": true
+}

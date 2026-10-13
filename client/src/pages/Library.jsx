@@ -1,10 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+	ArrowRight,
+	BookOpen,
+	Library as LibraryIcon,
+	Search,
+} from 'lucide-react';
 import { api } from '../lib/api.js';
 
 export default function Library() {
 	const [books, setBooks] = useState(null);
 	const [error, setError] = useState('');
+	const [q, setQ] = useState('');
 
 	useEffect(() => {
 		document.title = 'DAFTAR MENU R&B GRILL PALEMBANG';
@@ -14,20 +21,49 @@ export default function Library() {
 			.catch((e) => setError(e.message));
 	}, []);
 
-	return (
-		<div
-			className='min-h-full'
-			style={{ background: 'var(--color-background)' }}>
-			<main className='mx-auto max-w-6xl px-4 py-10'>
-				<div className='mb-8'>
-					<h1 className='text-2xl font-semibold'>
-						DAFTAR MENU R&B GRILL PALEMBANG
-					</h1>
-					<p style={{ color: 'var(--color-muted-foreground)' }}>
-						Pilih menu untuk dilihat.
-					</p>
-				</div>
+	const list = useMemo(() => {
+		if (!books) return null;
+		const s = q.trim().toLowerCase();
+		if (!s) return books;
+		return books.filter((b) =>
+			`${b.title} ${b.author || ''} ${b.description || ''}`
+				.toLowerCase()
+				.includes(s),
+		);
+	}, [books, q]);
 
+	return (
+		<div className='lib'>
+			<header className='lib-hero'>
+				<span className='lib-hero__glow' aria-hidden='true' />
+				<div className='lib-hero__inner'>
+					<div className='lib-hero__brand'>
+						<span className='lib-hero__logo'>
+							<BookOpen size={20} />
+						</span>
+						<span>R&amp;B FlipBook</span>
+					</div>
+					<h1 className='lib-hero__title'>
+						DAFTAR MENU R&amp;B GRILL PALEMBANG
+					</h1>
+					<p className='lib-hero__sub'>
+						Pilih menu untuk dibaca dengan efek membalik page.
+					</p>
+					{books && books.length > 0 && (
+						<div className='lib-hero__search'>
+							<Search size={18} />
+							<input
+								value={q}
+								onChange={(e) => setQ(e.target.value)}
+								placeholder='Cari menu…'
+								aria-label='Cari menu'
+							/>
+						</div>
+					)}
+				</div>
+			</header>
+
+			<main className='lib-main'>
 				{error && (
 					<div className='alert alert--danger'>
 						<div className='alert__description'>{error}</div>
@@ -35,67 +71,81 @@ export default function Library() {
 				)}
 
 				{!books && !error && (
-					<div className='grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4'>
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div
-								key={i}
-								className='aspect-[0.707] animate-pulse rounded-md'
-								style={{ background: 'var(--color-neutral)' }}
-							/>
+					<div className='lib-grid'>
+						{Array.from({ length: 8 }).map((_, i) => (
+							<div key={i} className='lib-skel'>
+								<div className='lib-skel__cover' />
+								<div className='lib-skel__line' />
+								<div className='lib-skel__line lib-skel__line--sm' />
+							</div>
 						))}
 					</div>
 				)}
 
 				{books && books.length === 0 && (
-					<div className='empty-state'>
-						<div className='empty-state__title'>
+					<div className='lib-empty'>
+						<span className='lib-empty__icon'>
+							<LibraryIcon size={30} />
+						</span>
+						<div className='lib-empty__title'>
 							Belum ada buku yang diterbitkan
 						</div>
-						<div className='empty-state__text'>
+						<div className='lib-empty__text'>
 							Masuk ke dashboard untuk menambahkan buku pertama Anda.
 						</div>
-						<div className='empty-state__action'>
-							<Link to='/admin' className='button button--primary'>
-								Buka Dashboard
-							</Link>
+						<Link to='/admin' className='button button--primary'>
+							Buka Dashboard
+						</Link>
+					</div>
+				)}
+
+				{list && list.length === 0 && books.length > 0 && (
+					<div className='lib-empty'>
+						<span className='lib-empty__icon'>
+							<Search size={28} />
+						</span>
+						<div className='lib-empty__title'>Tidak ada hasil</div>
+						<div className='lib-empty__text'>
+							Tidak ada menu yang cocok dengan “{q}”.
 						</div>
 					</div>
 				)}
 
-				{books && books.length > 0 && (
-					<div
-						className='grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4'
-						style={{ perspective: 1200 }}>
-						{books.map((b) => (
-							<Link
-								key={b.id}
-								to={`/book/${b.slug}`}
-								className='lib-card group block'>
+				{list && list.length > 0 && (
+					<div className='lib-grid'>
+						{list.map((b) => (
+							<Link key={b.id} to={`/book/${b.slug}`} className='lib-card'>
 								<div
-									className='lib-cover overflow-hidden rounded-sm bg-white'
+									className='lib-cover'
 									style={{
 										aspectRatio:
 											b.page_width && b.page_height
 												? b.page_width / b.page_height
 												: 0.707,
 									}}>
-									{b.cover && (
+									{b.cover ? (
 										<img
 											src={b.cover.t}
 											alt={`Sampul ${b.title}`}
-											className='h-full w-full object-fill'
 											loading='lazy'
 										/>
+									) : (
+										<span className='lib-cover__ph'>
+											<BookOpen size={28} />
+										</span>
 									)}
+									<span className='lib-cover__spine' aria-hidden='true' />
+									<span className='lib-cover__cta'>
+										Baca sekarang <ArrowRight size={15} />
+									</span>
 								</div>
-								<div className='mt-3'>
-									<div className='font-medium leading-snug group-hover:underline'>
-										{b.title}
-									</div>
-									<div
-										className='text-sm'
-										style={{ color: 'var(--color-muted-foreground)' }}>
-										{b.page_count} halaman{b.author ? ` · ${b.author}` : ''}
+								<div className='lib-meta'>
+									<div className='lib-meta__title'>{b.title}</div>
+									<div className='lib-meta__sub'>
+										<span className='lib-chip'>{b.page_count} page</span>
+										{b.author && (
+											<span className='lib-meta__author'>{b.author}</span>
+										)}
 									</div>
 								</div>
 							</Link>

@@ -140,7 +140,7 @@ export default function FlipViewer({ book, embed = false }) {
 			const img = document.createElement('img');
 			img.className = 'fb-img';
 			img.draggable = false;
-			img.alt = `Halaman ${i + 1}`;
+			img.alt = `Page ${i + 1}`;
 			img.decoding = 'async';
 			img.onload = () => img.classList.add('is-loaded');
 			d.appendChild(img);
@@ -1123,7 +1123,7 @@ export default function FlipViewer({ book, embed = false }) {
 				<button
 					type='button'
 					className='fb-arrow fb-arrow--l'
-					aria-label='Halaman sebelumnya'
+					aria-label='Page sebelumnya'
 					disabled={atStart || zoom > 1.001}
 					onClick={() => act('prev')}>
 					<ChevronLeft size={26} />
@@ -1131,7 +1131,7 @@ export default function FlipViewer({ book, embed = false }) {
 				<button
 					type='button'
 					className='fb-arrow fb-arrow--r'
-					aria-label='Halaman berikutnya'
+					aria-label='Page berikutnya'
 					disabled={atEnd || zoom > 1.001}
 					onClick={() => act('next')}>
 					<ChevronRight size={26} />
